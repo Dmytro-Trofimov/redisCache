@@ -1,0 +1,38 @@
+services:
+  java_db:
+    container_name: java_db
+    image: mysql
+    ports:
+      - 3306:3306
+    environment:
+        MYSQL_DATABASE: demo
+        MYSQL_USER: demo
+        MYSQL_PASSWORD: root
+        MYSQL_ROOT_PASSWORD: root
+    volumes:
+        - mysql-data:/var/lib/mysql
+  java_app:
+    container_name: java_app
+    image: demoapp
+    build: .
+    ports:
+     - 8080:8080
+    environment:
+       SPRING_DATASOURCE_URL: jdbc:mysql://java_db:3306/demo
+       SPRING_DATASOURCE_USERNAME: demo
+       SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+       - java_db
+       - redis
+    restart: always
+  
+  redis:
+        container_name: redis
+        image: redis
+        ports:
+          - 6379:6379
+        volumes:
+            - redis-data:/data
+volumes:
+  mysql-data:
+  redis-data:
